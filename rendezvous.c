@@ -10,8 +10,9 @@ sem_t s1, s2;
 
 void *child_1(void *arg) {
     printf("child 1: before\n");
-    // what goes here?
+    // child 1 posts to s1 to singal to child 2 that it does not need to wait
     sem_post(&s1);
+    // child 1 waits on s2 for child 2 to signal that it has printed its before message
     sem_wait(&s2);
     printf("child 1: after\n");
     return NULL;
@@ -19,8 +20,9 @@ void *child_1(void *arg) {
 
 void *child_2(void *arg) {
     printf("child 2: before\n");
-    // what goes here?
+    // child 2 posts to s2 to singal to child 1 that it does not need to wait
     sem_post(&s2);
+    // child 2 waits on s1 for child 1 to signal that it has printed its before message
     sem_wait(&s1);
     printf("child 2: after\n");
     return NULL;

@@ -13,10 +13,8 @@
 // other integers to track things.
 
 typedef struct __barrier_t {
-    // add semaphores and other information here
     sem_t lock, barrier_lock;
-    int num_threads;
-    int thread_count;
+    int num_threads, thread_count;
 } barrier_t;
 
 
@@ -24,22 +22,27 @@ typedef struct __barrier_t {
 barrier_t b;
 
 void barrier_init(barrier_t *b, int num_threads) {
-    // initialization code goes here
+    // lock is initialized to 1 so that the first thread that accesses it will be allowed to continue
     sem_init(&b->lock, 0, 1);
+    // barrier_lock is initialized to 0 so that the all threads will wait until another calls sem_post
     sem_init(&b->barrier_lock, 0, 0);
     b->num_threads = num_threads;
     b->thread_count = 0;
 }
 
 void barrier(barrier_t *b) {
-    // barrier code goes here
+
+    // the lock semaphore is used to lock the critical section that increments the thread_count
     sem_wait(&b->lock);
     b->thread_count++;
     sem_post(&b->lock);
 
+    // all threads execept the last thread to enter the barrier must wait on the barrier_lock
     if(b->thread_count < b->num_threads)
         sem_wait(&b->barrier_lock);
 
+    // the last thread to enter the barrier calls sem_post on the barrier_lock releasing another thread 
+    // each thread that is released will repeat this action until all other threads are released
     sem_post(&b->barrier_lock);
 }
 
