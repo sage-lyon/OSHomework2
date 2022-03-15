@@ -1,10 +1,10 @@
 CC=gcc
-CFLAGS=-I.
+CFLAGS=-I. -pthread
 
 all: fork-join rendezvous barrier
 
 fork-join: fork-join.c
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) 
 
 rendezvous: rendezvous.c
 	$(CC) -o $@ $^ $(CFLAGS)
